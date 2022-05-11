@@ -2,16 +2,35 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider :virtualbox do |v|
     v.memory = 2048
+    v.cpus = 2
   end
-  config.vm.synced_folder "../deploy-blue-green/", 
-"/var/www/releases/local", create: true
-  config.vm.define "reactjsserver" do |db|
-    db.vm.box = "debian/buster64"
-    db.vm.hostname = "reactjsserver"
-    db.vm.network :private_network, ip: "10.10.10.10"
-    db.vm.provision "ansible" do |ansible|
-        ansible.playbook = "reactjs06.yaml"
+
+#   config.vm.synced_folder "../deploy-blue-green/", 
+# "/var/www/releases/local", create: true
+  config.vm.define "reactjsserver" do |web|
+    web.vm.box = "debian/buster64"
+    web.vm.hostname = "reactjsserver"
+    web.vm.network "public_network", ip: "192.168.7.51", bridge: "enp0s31f6"
+    web.vm.provision "ansible" do |ansible|
+        ansible.playbook = "reactjs11.yaml"
         ansible.become = true
     end
   end
+
+  config.vm.define "db_server" do |db|
+    db.vm.box = "debian/buster64"
+    db.vm.hostname = "dbserver"
+    db.vm.network "public_network", ip: "192.168.7.52", bridge: "enp0s31f6"
+    db.vm.provision "ansible" do |ansible|
+      ansible.playbook = "postgresql11.yaml"
+      ansible.become = true
+    end
+  end
+  
+  config.vm.define "spectation_server" do |spec|
+    spec.vm.box = "debian/buster64"
+    spec.vm.hostname = "spectationserver"
+    spec.vm.network "public_network", ip: "192.168.7.53", bridge: "enp0s31f6"
+  end
+
 end

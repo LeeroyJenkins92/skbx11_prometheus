@@ -52,7 +52,7 @@
           - yarn
           - npm
           - nodejs
-#          - nginx
+          - nginx
 
     - name: Delete the html file 
       file:
@@ -86,23 +86,23 @@
         recurse=yes
         state=directory
 
-    # - name: Clone the repository
-    #   git:
-    #     repo: "{{ repository }}"
-    #     dest: "{{ release_path }}"
+    - name: Clone the repository
+      git:
+        repo: "{{ repository }}"
+        dest: "{{ release_path }}"
 
 
     - name: Add IP address of instance to main site 
       replace:
         path: "{{ release_path }}/src/App.js"
-        regexp: 'Test of revert'
+        regexp: 'Test of Revert'
         replace: '{{ ansible_default_ipv4.address }}'
         backup: yes
 
-    # - name: Install packages based on package.json.
-    #   npm:
-    #     path: "{{ release_path }}"
-    #   ignore_errors: yes
+    - name: Install packages based on package.json.
+      npm:
+        path: "{{ release_path }}"
+      ignore_errors: yes
 
     - name: YARN install
       command: "yarn install"
@@ -112,19 +112,19 @@
       environment:
         REACT_APP_WEBSITE_PREFIX: Ansible
 
-    # - name: Yarn Build
-    #   command: "yarn build"
-    #   args:
-    #     chdir: "{{ release_path }}"
-    #   environment:
-    #     REACT_APP_WEBSITE_PREFIX: Ansible
-    #   ignore_errors: yes
+    - name: Yarn Build
+      command: "yarn build"
+      args:
+        chdir: "{{ release_path }}"
+      environment:
+        REACT_APP_WEBSITE_PREFIX: Ansible
+      ignore_errors: yes
       
-    # - name: Update Symlink
-    #   file:
-    #     src={{ release_path }}/build
-    #     dest={{ current_path }}
-    #     state=link
+    - name: Update Symlink
+      file:
+        src={{ release_path }}/build
+        dest={{ current_path }}
+        state=link
 
 
 
